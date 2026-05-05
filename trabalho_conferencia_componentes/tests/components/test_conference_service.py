@@ -27,3 +27,28 @@ def test_inscricao_com_sucesso():
 
     assert result is True
     assert enrollment_repo.is_workshop_with_participant(10, 1)
+
+def test_participante_bloqueado():
+    service = ConferenceService(
+        WorkshopRepository(),
+        ParticipantRepository(),
+        EnrollmentRepository(),
+        WaitlistRepository()
+    )
+
+    result = service.enroll_in_workshop(20, 1)
+
+    assert result is False
+
+
+def test_participante_nao_pagou():
+    service = ConferenceService(
+        WorkshopRepository(),
+        ParticipantRepository(),
+        EnrollmentRepository(),
+        WaitlistRepository()
+    )
+
+    result = service.enroll_in_workshop(30, 1)
+
+    assert result is False
