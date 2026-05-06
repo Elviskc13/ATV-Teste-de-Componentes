@@ -88,39 +88,6 @@ def test_nao_entra_na_fila_se_disponivel():
 
     assert result is False
 
-def test_entrada_na_fila():
-    workshop_repo = WorkshopRepository()
-    participant_repo = ParticipantRepository()
-    enrollment_repo = EnrollmentRepository()
-    waitlist_repo = WaitlistRepository()
-
-    service = ConferenceService(
-        workshop_repo,
-        participant_repo,
-        enrollment_repo,
-        waitlist_repo
-    )
-
-    result = service.join_waitlist(10, 3)
-
-    assert result is True
-
-
-def test_nao_entra_na_fila_se_disponivel():
-    workshop_repo = WorkshopRepository()
-    participant_repo = ParticipantRepository()
-    enrollment_repo = EnrollmentRepository()
-    waitlist_repo = WaitlistRepository()
-
-    service = ConferenceService(
-        workshop_repo,
-        participant_repo,
-        enrollment_repo,
-        waitlist_repo
-    )
-
-    result = service.join_waitlist(10, 1)
-
 def test_respeita_ordem_da_fila():
     workshop_repo = WorkshopRepository()
     participant_repo = ParticipantRepository()
@@ -201,3 +168,25 @@ def test_cancelamento_sem_fila_libera_vaga():
     service.cancel_workshop_enrollment(10, 1)
 
     assert workshop_repo.is_available(1)
+
+def test_limite_de_inscricoes():
+    workshop_repo = WorkshopRepository()
+    participant_repo = ParticipantRepository()
+    enrollment_repo = EnrollmentRepository()
+    waitlist_repo = WaitlistRepository()
+
+    service = ConferenceService(
+        workshop_repo,
+        participant_repo,
+        enrollment_repo,
+        waitlist_repo
+    )
+
+    service.enroll_in_workshop(10, 1)
+    service.enroll_in_workshop(10, 2)
+
+    workshop_repo.mark_available(3)
+
+    result = service.enroll_in_workshop(10, 3)
+
+    assert result is False
