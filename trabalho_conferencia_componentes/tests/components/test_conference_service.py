@@ -161,3 +161,43 @@ def test_primeiro_da_fila_consegue_entrar():
     result = service.enroll_in_workshop(10, 3)
 
     assert result is True
+
+def test_cancelamento_com_fila_nao_libera_vaga():
+    workshop_repo = WorkshopRepository()
+    participant_repo = ParticipantRepository()
+    enrollment_repo = EnrollmentRepository()
+    waitlist_repo = WaitlistRepository()
+
+    service = ConferenceService(
+        workshop_repo,
+        participant_repo,
+        enrollment_repo,
+        waitlist_repo
+    )
+
+    service.enroll_in_workshop(10, 1)
+
+    service.join_waitlist(40, 1)
+
+    service.cancel_workshop_enrollment(10, 1)
+
+    assert not workshop_repo.is_available(1)
+
+def test_cancelamento_sem_fila_libera_vaga():
+    workshop_repo = WorkshopRepository()
+    participant_repo = ParticipantRepository()
+    enrollment_repo = EnrollmentRepository()
+    waitlist_repo = WaitlistRepository()
+
+    service = ConferenceService(
+        workshop_repo,
+        participant_repo,
+        enrollment_repo,
+        waitlist_repo
+    )
+
+    service.enroll_in_workshop(10, 1)
+
+    service.cancel_workshop_enrollment(10, 1)
+
+    assert workshop_repo.is_available(1)
