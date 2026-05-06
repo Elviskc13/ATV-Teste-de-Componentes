@@ -87,3 +87,77 @@ def test_nao_entra_na_fila_se_disponivel():
     result = service.join_waitlist(10, 1)
 
     assert result is False
+
+def test_entrada_na_fila():
+    workshop_repo = WorkshopRepository()
+    participant_repo = ParticipantRepository()
+    enrollment_repo = EnrollmentRepository()
+    waitlist_repo = WaitlistRepository()
+
+    service = ConferenceService(
+        workshop_repo,
+        participant_repo,
+        enrollment_repo,
+        waitlist_repo
+    )
+
+    result = service.join_waitlist(10, 3)
+
+    assert result is True
+
+
+def test_nao_entra_na_fila_se_disponivel():
+    workshop_repo = WorkshopRepository()
+    participant_repo = ParticipantRepository()
+    enrollment_repo = EnrollmentRepository()
+    waitlist_repo = WaitlistRepository()
+
+    service = ConferenceService(
+        workshop_repo,
+        participant_repo,
+        enrollment_repo,
+        waitlist_repo
+    )
+
+    result = service.join_waitlist(10, 1)
+
+def test_respeita_ordem_da_fila():
+    workshop_repo = WorkshopRepository()
+    participant_repo = ParticipantRepository()
+    enrollment_repo = EnrollmentRepository()
+    waitlist_repo = WaitlistRepository()
+
+    service = ConferenceService(
+        workshop_repo,
+        participant_repo,
+        enrollment_repo,
+        waitlist_repo
+    )
+
+    service.join_waitlist(10, 3)  
+    service.join_waitlist(40, 3)  
+
+    result = service.enroll_in_workshop(40, 3)
+
+    assert result is False
+
+def test_primeiro_da_fila_consegue_entrar():
+    workshop_repo = WorkshopRepository()
+    participant_repo = ParticipantRepository()
+    enrollment_repo = EnrollmentRepository()
+    waitlist_repo = WaitlistRepository()
+
+    service = ConferenceService(
+        workshop_repo,
+        participant_repo,
+        enrollment_repo,
+        waitlist_repo
+    )
+
+    service.join_waitlist(10, 3)
+
+    workshop_repo.mark_available(3)
+
+    result = service.enroll_in_workshop(10, 3)
+
+    assert result is True
